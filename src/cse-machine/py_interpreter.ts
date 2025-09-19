@@ -78,7 +78,7 @@ export function PyEvaluate(code: string, program: StmtNS.Stmt, context: PyContex
             options.stepLimit,
             options.isPrelude || false,
         );
-        return context.output ? { type: "string", value: context.output} : { type: 'undefined' };
+        return context.output ? { type: "string", value: context.output} : { type: 'string', value: '' };
     } catch(error: any) {
         return { type: 'error', message: error.message};
     } finally {
