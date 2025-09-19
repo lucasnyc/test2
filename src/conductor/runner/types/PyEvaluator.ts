@@ -3,12 +3,12 @@
 // Original author(s): Source Academy Team
 
 import { PyRunInContext } from "../../../";
-import { Context } from "../../../cse-machine/context";
+import { PyContext } from "../../../cse-machine/py_context";
 import { BasicEvaluator } from "../BasicEvaluator";
 import { IRunnerPlugin } from "./IRunnerPlugin";
 import { IOptions } from "../../../";
 
-const defaultContext = new Context();
+const defaultContext = new PyContext();
 const defaultOptions: IOptions = {
     isPrelude: false,
     envSteps: 100000,
@@ -16,7 +16,7 @@ const defaultOptions: IOptions = {
 };
 
 export class PyEvaluator extends BasicEvaluator {
-    private context: Context;
+    private context: PyContext;
     private options: IOptions;
   
     constructor(conductor: IRunnerPlugin) {
@@ -33,7 +33,7 @@ export class PyEvaluator extends BasicEvaluator {
                 this.options
             );
             if ('status' in result && result.status === 'finished') {
-                this.conductor.sendOutput(`${result.representation.toString(result.value)}`);
+                this.conductor.sendOutput(`${result.representation.toString()}`);
             }
         } catch (error) {
             this.conductor.sendOutput(`Error: ${error instanceof Error ? error.message : error}`);
