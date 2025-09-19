@@ -4544,7 +4544,7 @@
             context.runtime.isRunning = true;
             context.control = new PyControl(program);
             const result = pyRunCSEMachine(code, context, context.control, context.stash, options.envSteps, options.stepLimit, options.isPrelude || false);
-            return context.output ? { type: "string", value: context.output } : { type: 'undefined' };
+            return context.output ? { type: "string", value: context.output } : { type: 'string', value: '' };
         }
         catch (error) {
             return { type: 'error', message: error.message };
