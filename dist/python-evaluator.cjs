@@ -743,6 +743,10 @@ function toPythonString(obj) {
             return `<function ${funcName}>`;
         }
     }
+    else if (obj.type === 'list') {
+        const elements = obj.value.map(element => toPythonString(element));
+        return `[${elements.join(', ')}]`;
+    }
     else if (obj.value === undefined) {
         ret = 'None';
     }

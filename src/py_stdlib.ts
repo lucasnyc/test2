@@ -3,6 +3,8 @@ import { PyClosure } from './cse-machine/py_closure';
 import { Value } from "./cse-machine/stash";
 import { pyHandleRuntimeError } from "./cse-machine/py_utils";
 import { UnsupportedOperandTypeError } from "./errors/py_errors";
+import { List } from '@sourceacademy/conductor/types';
+import { ListValue } from './cse-machine/stash';
 
 export function toPythonFloat(num: number): string {
     if (Object.is(num, -0)) {
@@ -54,7 +56,11 @@ export function toPythonString(obj: Value): string {
             const funcName = (obj.node as any).name?.lexeme || '(anonymous)';
             return `<function ${funcName}>`;
         }
-    } else if ((obj as Value).value === undefined) {
+    } else if ((obj as Value).type === 'list') {
+        const elements = (obj as ListValue).value.map(element => toPythonString(element));
+        return `[${elements.join(', ')}]`
+    } 
+    else if ((obj as Value).value === undefined) {
         ret = 'None';
     } else {
         ret = (obj as Value).value.toString();
