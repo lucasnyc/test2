@@ -104,6 +104,10 @@ function marshalToPy(value, context) {
     else if (value === null || value === undefined) {
         return { type: 'undefined' };
     }
+    else if (Array.isArray(value)) {
+        const marshalledArray = value.map(element => marshalToPy(element));
+        return { type: 'list', value: marshalledArray };
+    }
     // TODO: implementation for more types such as list or dicts
     // We do not include complex numbers of other objects from JS for now
     throw new Error(`Marshalling of Javascript type '${typeof value} is not implemented.`);

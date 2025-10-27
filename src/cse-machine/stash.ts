@@ -84,6 +84,11 @@ export interface UndefinedValue {
   type: 'undefined';
 }
 
+export interface ListValue {
+  type: 'list';
+  value: Value[];
+}
+
 export class Stash extends Stack<Value> {
   public constructor() {
     super();

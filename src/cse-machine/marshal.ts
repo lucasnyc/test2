@@ -1,5 +1,5 @@
 import { PyContext } from "./py_context";
-import { Value } from "./stash";
+import { Value, ListValue } from "./stash";
 
 /**
  *  Marshal JS value into a py-slang Value representation
@@ -18,6 +18,9 @@ export function marshalToPy(value: any, context: PyContext): Value {
         return { type: 'bool', value};
     } else if (value === null || value === undefined) {
         return { type: 'undefined' };
+    } else if (Array.isArray(value)) {
+        const marshalledArray: Value[] = value.map(element => marshalToPy(element, context));
+        return {type: 'list', value: marshalledArray};
     }
     // TODO: implementation for more types such as list or dicts
     // We do not include complex numbers of other objects from JS for now

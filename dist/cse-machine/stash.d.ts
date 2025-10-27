@@ -58,6 +58,10 @@ export interface ErrorValue {
 export interface UndefinedValue {
     type: 'undefined';
 }
+export interface ListValue {
+    type: 'list';
+    value: Value[];
+}
 export declare class Stash extends Stack<Value> {
     constructor();
     copy(): Stash;
