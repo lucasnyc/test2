@@ -1,0 +1,13 @@
+import { PyContext } from "./py_context";
+import { Value } from "./stash";
+import { PyNode } from "./py_types";
+import { TokenType } from "../tokens";
+import { PyRuntimeSourceError } from "../errors/py_runtimeSourceError";
+import { PyEnvironment } from "./py_environment";
+export declare function pyHandleRuntimeError(context: PyContext, error: PyRuntimeSourceError): void;
+export declare function typeTranslator(type: string): string;
+export declare function operatorTranslator(operator: TokenType | string): string;
+export declare function pythonMod(a: number | bigint, b: number | bigint): number | bigint;
+export declare function pyDefineVariable(context: PyContext, name: string, value: Value, env?: PyEnvironment): void;
+export declare function pyGetVariable(code: string, context: PyContext, name: string, node: PyNode): Value;
+export declare function scanForAssignments(node: PyNode | PyNode[]): Set<string>;

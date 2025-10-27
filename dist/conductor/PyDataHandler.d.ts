@@ -1,0 +1,35 @@
+import { IDataHandler, IFunctionSignature, TypedValue, DataType, ExternCallable } from '@sourceacademy/conductor/types';
+import { PyContext } from '../cse-machine/py_context';
+export declare class PyDataHandler implements IDataHandler {
+    private context;
+    readonly hasDataInterface = true;
+    constructor(context: PyContext);
+    closure_make<const Arg extends readonly DataType[], const Ret extends DataType>(sig: IFunctionSignature<Arg, Ret>, func: ExternCallable<Arg, Ret>): Promise<TypedValue<DataType.CLOSURE, Ret>>;
+    pair_make(head: TypedValue<DataType>, tail: TypedValue<DataType>): Promise<TypedValue<DataType.PAIR>>;
+    pair_head(p: TypedValue<DataType.PAIR>): Promise<TypedValue<DataType>>;
+    pair_sethead(p: TypedValue<DataType.PAIR>, tv: TypedValue<DataType>): Promise<void>;
+    pair_tail(p: TypedValue<DataType.PAIR>): Promise<TypedValue<DataType>>;
+    pair_settail(p: TypedValue<DataType.PAIR>, tv: TypedValue<DataType>): Promise<void>;
+    pair_assert(p: TypedValue<DataType.PAIR>, headType?: DataType, tailType?: DataType): Promise<void>;
+    array_make<T extends DataType>(t: T, len: number, init?: TypedValue<any>): Promise<TypedValue<DataType.ARRAY, T>>;
+    array_length(a: TypedValue<DataType.ARRAY, DataType>): Promise<number>;
+    array_get(a: TypedValue<DataType.ARRAY, DataType.VOID>, idx: number): Promise<TypedValue<DataType>>;
+    array_type<T extends DataType>(a: TypedValue<DataType.ARRAY, T>): Promise<T>;
+    array_set(a: TypedValue<DataType.ARRAY, DataType.VOID>, idx: number, tv: TypedValue<DataType>): Promise<void>;
+    array_assert<T extends DataType>(a: TypedValue<DataType.ARRAY, DataType>, type?: T, length?: number): Promise<void>;
+    closure_is_vararg(c: TypedValue<DataType.CLOSURE, DataType>): Promise<boolean>;
+    closure_arity(c: TypedValue<DataType.CLOSURE, DataType>): Promise<number>;
+    closure_call<T extends DataType>(c: TypedValue<DataType.CLOSURE, T>, args: TypedValue<DataType>[], returnType: T): Promise<TypedValue<T>>;
+    closure_call_unchecked<T extends DataType>(c: TypedValue<DataType.CLOSURE, T>, args: TypedValue<DataType>[]): Promise<TypedValue<T>>;
+    closure_arity_assert(c: TypedValue<DataType.CLOSURE, DataType>, arity: number): Promise<void>;
+    opaque_make(v: any, immutable?: boolean): Promise<TypedValue<DataType.OPAQUE>>;
+    opaque_get(o: TypedValue<DataType.OPAQUE>): Promise<any>;
+    opaque_update(o: TypedValue<DataType.OPAQUE>, v: any): Promise<void>;
+    tie(dependent: TypedValue<DataType>, dependee: TypedValue<DataType> | null): Promise<void>;
+    untie(dependent: TypedValue<DataType>, dependee: TypedValue<DataType> | null): Promise<void>;
+    list(...elements: TypedValue<DataType>[]): Promise<TypedValue<DataType.LIST>>;
+    is_list(xs: TypedValue<DataType.LIST>): Promise<boolean>;
+    list_to_vec(xs: TypedValue<DataType.LIST>): Promise<TypedValue<DataType>[]>;
+    accumulate<T extends Exclude<DataType, void>>(op: TypedValue<DataType.CLOSURE, T>, initial: TypedValue<T>, sequence: TypedValue<DataType.LIST>, resultType: T): Promise<TypedValue<T>>;
+    length(xs: TypedValue<DataType.LIST>): Promise<number>;
+}

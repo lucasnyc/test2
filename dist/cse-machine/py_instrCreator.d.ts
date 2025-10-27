@@ -1,0 +1,14 @@
+import { Environment } from "./environment";
+import { AppInstr, AssmtInstr, BinOpInstr, BranchInstr, EnvInstr, Instr, PyNode, UnOpInstr, BoolOpInstr, EndOfFunctionBodyInstr } from "./py_types";
+import { TokenType } from "../tokens";
+export declare const popInstr: (srcNode: PyNode) => Instr;
+export declare const assmtInstr: (symbol: string, constant: boolean, declaration: boolean, srcNode: PyNode) => AssmtInstr;
+export declare const appInstr: (numOfArgs: number, srcNode: PyNode) => AppInstr;
+export declare const envInstr: (env: Environment, srcNode: PyNode) => EnvInstr;
+export declare const markerInstr: (srcNode: PyNode) => Instr;
+export declare const binOpInstr: (symbol: any, srcNode: PyNode) => BinOpInstr;
+export declare const resetInstr: (srcNode: PyNode) => Instr;
+export declare const branchInstr: (consequent: PyNode, alternate: PyNode | null | undefined, srcNode: PyNode) => BranchInstr;
+export declare const unOpInstr: (symbol: TokenType, srcNode: PyNode) => UnOpInstr;
+export declare const boolOpInstr: (symbol: TokenType, srcNode: PyNode) => BoolOpInstr;
+export declare const endOfFunctionBodyInstr: (srcNode: PyNode) => EndOfFunctionBodyInstr;
