@@ -859,9 +859,8 @@ function pythonMod(a, b) {
     }
 }
 function pyDefineVariable(context, name, value, env = currentEnvironment(context)) {
-    const marshalledValue = marshalToPy(value);
     Object.defineProperty(env.head, name, {
-        value: marshalledValue,
+        value: value,
         writable: true,
         enumerable: true
     });
@@ -1977,7 +1976,7 @@ const pyCmdEvaluators = {
         }
         else if (callable instanceof JsClosure) {
             const result = callable.call(args);
-            stash.push(result);
+            stash.push(marshalToPy(result));
         }
         else {
             // Built-in function from stdlib / constants

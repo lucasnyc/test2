@@ -19,6 +19,7 @@ import { evaluateUnaryExpression, evaluateBinaryExpression, evaluateBoolExpressi
 import { Result, Finished, CSEBreak, Representation} from '../types';
 import { toPythonString } from '../py_stdlib'
 import { pyGetVariable, pyDefineVariable, scanForAssignments } from './py_utils';
+import { marshalToPy } from './marshal';
 
 
 type CmdEvaluator = (
@@ -544,7 +545,7 @@ const pyCmdEvaluators: { [type: string]: CmdEvaluator } = {
             }
         } else if (callable instanceof JsClosure) {
             const result = callable.call(args);
-            stash.push(result);
+            stash.push(marshalToPy(result, context));
         } else {
             // Built-in function from stdlib / constants
             const result = (callable as any)(context, ...args);
