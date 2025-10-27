@@ -1,8 +1,5 @@
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-    typeof define === 'function' && define.amd ? define(['exports'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.PySlangWorker = {}));
-})(this, (function (exports) { 'use strict';
+var PySlangWorker = (function (exports) {
+    'use strict';
 
     var R;!function(R){R[R.CALL=0]="CALL",R[R.RETURN=1]="RETURN",R[R.RETURN_ERR=2]="RETURN_ERR";}(R||(R={}));
 
@@ -5174,5 +5171,7 @@
     // }
     m(PyEvaluator);
 
-}));
+    return exports;
+
+})({});
 //# sourceMappingURL=worker.js.map
