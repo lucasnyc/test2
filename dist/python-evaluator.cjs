@@ -749,6 +749,9 @@ function toPythonString(obj) {
 }
 class BuiltInFunctions {
     static print(context, ...args) {
+        args.forEach((arg, index) => {
+            console.log(`Print arg ${index}:`, arg);
+        });
         const output = args.map(arg => toPythonString(arg)).join(' ');
         context.output += output + '\n';
         return { type: 'undefined' };

@@ -64,6 +64,10 @@ export function toPythonString(obj: Value): string {
 
 export class BuiltInFunctions {
     static print(context: PyContext, ...args: Value[]): Value {
+        args.forEach((arg, index) => {
+            console.log(`Print arg ${index}:`, arg);
+        })
+
         const output = args.map(arg => toPythonString(arg)).join(' ');
         context.output += output + '\n';
         return { type: 'undefined' }; 
