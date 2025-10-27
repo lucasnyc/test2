@@ -1,24 +1,8 @@
-var PySlangWorker = (function (exports, fs) {
-    'use strict';
-
-    function _interopNamespaceDefault(e) {
-        var n = Object.create(null);
-        if (e) {
-            Object.keys(e).forEach(function (k) {
-                if (k !== 'default') {
-                    var d = Object.getOwnPropertyDescriptor(e, k);
-                    Object.defineProperty(n, k, d.get ? d : {
-                        enumerable: true,
-                        get: function () { return e[k]; }
-                    });
-                }
-            });
-        }
-        n.default = e;
-        return Object.freeze(n);
-    }
-
-    var fs__namespace = /*#__PURE__*/_interopNamespaceDefault(fs);
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+    typeof define === 'function' && define.amd ? define(['exports'], factory) :
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.PySlangWorker = {}));
+})(this, (function (exports) { 'use strict';
 
     var R;!function(R){R[R.CALL=0]="CALL",R[R.RETURN=1]="RETURN",R[R.RETURN_ERR=2]="RETURN_ERR";}(R||(R={}));
 
@@ -5166,32 +5150,29 @@ var PySlangWorker = (function (exports, fs) {
         }
     }
 
-    if (require.main === module) {
-        (async () => {
-            if (process.argv.length < 3) {
-                console.error("Usage: npm run start:dev -- <python-file>");
-                process.exit(1);
-            }
-            const options = {};
-            const context = new PyContext();
-            const filePath = process.argv[2];
-            try {
-                //await loadModulesFromServer(context, "http://localhost:8022");
-                const code = fs__namespace.readFileSync(filePath, "utf8") + "\n";
-                console.log(`Parsing Python file: ${filePath}`);
-                const result = await PyRunInContext(code, context, options);
-                console.info(result);
-                console.info(result.value);
-                console.info(result.representation.toString());
-            }
-            catch (e) {
-                console.error("Error:", e);
-            }
-        })();
-    }
+    // if (require.main === module) {
+    //     (async () => {
+    //       if (process.argv.length < 3) {
+    //         console.error("Usage: npm run start:dev -- <python-file>");
+    //         process.exit(1);
+    //       }
+    //       const options = {};
+    //       const context = new PyContext();
+    //       const filePath = process.argv[2];
+    //       try {
+    //         //await loadModulesFromServer(context, "http://localhost:8022");
+    //         const code = fs.readFileSync(filePath, "utf8") + "\n";
+    //         console.log(`Parsing Python file: ${filePath}`);
+    //         const result = await PyRunInContext(code, context, options);
+    //         console.info(result);
+    //         console.info((result as Finished).value);
+    //         console.info((result as Finished).representation.toString());
+    //       } catch (e) {
+    //         console.error("Error:", e);
+    //       }
+    //     })();
+    // }
     m(PyEvaluator);
 
-    return exports;
-
-})({}, fs);
+}));
 //# sourceMappingURL=worker.js.map
