@@ -7,6 +7,7 @@ import { currentEnvironment, PyEnvironment } from "./py_environment";
 import { builtIns } from "../py_stdlib";
 import { StmtNS, ExprNS } from "../ast-types";
 import { UnboundLocalError, NameError } from "../errors/py_errors";
+import { marshalToPy } from "./marshal";
 
 
 export function pyHandleRuntimeError (context: PyContext, error: PyRuntimeSourceError) {
@@ -102,8 +103,9 @@ export function pyDefineVariable(
   value: Value,
   env: PyEnvironment = currentEnvironment(context)
 ) {
+  const marshalledValue = marshalToPy(value, context);
   Object.defineProperty(env.head, name, {
-      value: value,
+      value: marshalledValue,
       writable: true,
       enumerable: true
   });

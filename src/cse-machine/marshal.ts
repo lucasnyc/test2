@@ -2,7 +2,7 @@ import { PyContext } from "./py_context";
 import { Value } from "./stash";
 
 /**
- *  Marshal JS vlaue into a py-slang Value representation
+ *  Marshal JS value into a py-slang Value representation
  *  @param value The JS value to marshal
  *  @param context PyContext
  *  @returns py-slang Value 

@@ -83,7 +83,7 @@ const pushEnvironment = (context, environment) => {
 };
 
 /**
- *  Marshal JS vlaue into a py-slang Value representation
+ *  Marshal JS value into a py-slang Value representation
  *  @param value The JS value to marshal
  *  @param context PyContext
  *  @returns py-slang Value
@@ -859,8 +859,9 @@ function pythonMod(a, b) {
     }
 }
 function pyDefineVariable(context, name, value, env = currentEnvironment(context)) {
+    const marshalledValue = marshalToPy(value);
     Object.defineProperty(env.head, name, {
-        value: value,
+        value: marshalledValue,
         writable: true,
         enumerable: true
     });
