@@ -304,22 +304,27 @@ export class Parser {
             )
         }
         const hasParentheses = this.match(TokenType.LPAR);
-        do {
-            const name = this.consume(TokenType.NAME, "Expected name to import");
-            let alias: Token | null = null;
-            
+        
+        // Parse the first name
+        let name = this.consume(TokenType.NAME, "Expected name to import");
+        let alias: Token | null = null;
+        if (this.check(TokenType.NAME) && this.peek().lexeme === 'as') {
+            this.advance(); // consume 'as'
+            alias = this.consume(TokenType.NAME, "Expected alias name after 'as'");
+        }
+        importedNames.push(new ImportAlias(name, alias));
+
+        // Parse subsequent names separated by commas
+        while (this.match(TokenType.COMMA)) {
+            // If a comma is found, expect another name
+            name = this.consume(TokenType.NAME, "Expected name to import after comma");
+            alias = null;
             if (this.check(TokenType.NAME) && this.peek().lexeme === 'as') {
-                this.advance();
+                this.advance(); // consume 'as'
                 alias = this.consume(TokenType.NAME, "Expected alias name after 'as'");
             }
             importedNames.push(new ImportAlias(name, alias));
-
-            if (this.check(TokenType.COMMA)) {
-                this.advance()
-            } else {
-                break;
-            }
-        } while (true);
+        }
 
         if (hasParentheses) {
             this.consume(TokenType.RPAR, "Expected closing ')' after import list")
