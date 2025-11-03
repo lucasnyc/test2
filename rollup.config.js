@@ -21,6 +21,7 @@ const config = [{
     file: 'dist/worker.js',
     format: 'umd',
     name: 'PySlangWorker',
+    exports: 'auto',
     sourcemap: true
   },
   plugins: [commonjs(), json(), typescript(), nodeResolve()]
