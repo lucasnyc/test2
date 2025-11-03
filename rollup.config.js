@@ -19,9 +19,8 @@ const config = [{
   input: 'src/index.ts',
   output: {
     file: 'dist/worker.js',
-    format: 'umd',
+    format: 'iife',
     name: 'PySlangWorker',
-    exports: 'auto',
     sourcemap: true
   },
   plugins: [commonjs(), json(), typescript(), nodeResolve()]
