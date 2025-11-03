@@ -35,4 +35,5 @@ import * as fs from "fs";
 
 //     })();
 // }
-const {runnerPlugin, conduit} = initialise(PyEvaluator);
+// const {runnerPlugin, conduit} = initialise(PyEvaluator);
+export default PyEvaluator
