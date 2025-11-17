@@ -16,7 +16,7 @@ import { Stash, Value, ErrorValue } from './stash';
 import { IOptions } from '../runner/pyRunner';
 import * as instrCreator from './py_instrCreator';
 import { evaluateUnaryExpression, evaluateBinaryExpression, evaluateBoolExpression, isFalsy } from './py_operators';
-import { Result, Finished, CSEBreak, Representation} from '../types';
+import { Result, Finished, CSEBreak, Representation, RecursivePartial} from '../types';
 import { toPythonString } from '../py_stdlib'
 import { pyGetVariable, pyDefineVariable, scanForAssignments } from './py_utils';
 
@@ -30,6 +30,11 @@ type CmdEvaluator = (
   isPrelude: boolean
 ) => void
 
+let cseFinalPrint = "";
+export function addPrint(str: string) {
+  cseFinalPrint = cseFinalPrint + str + "\n";
+}
+
 /**
  * Function that returns the appropriate Promise<Result> given the output of CSE machine evaluating, depending
  * on whether the program is finished evaluating, ran into a breakpoint or ran into an error.
@@ -38,19 +43,21 @@ type CmdEvaluator = (
  * @returns The corresponding promise.
  */
 export function PyCSEResultPromise(context: PyContext, value: Value): Promise<Result> {
-    return new Promise((resolve, reject) => {
-        if (value instanceof CSEBreak) {
-            resolve({ status: 'suspended-cse-eval', context });
-        } else if (value && (value as any).type === 'error') {
-            const errorValue = value as ErrorValue;
-            const representation = new Representation(errorValue.message);
-            resolve({ status: 'finished', context, value, representation });
-        } else {
-            const representation = new Representation(toPythonString(value));
-            resolve({ status: 'finished', context, value, representation });
-        }
-    });
+  return new Promise((resolve, reject) => {
+    if (value instanceof CSEBreak) {
+      resolve({ status: 'suspended-cse-eval', context });
+    } else if (value.type === 'error') {
+      const msg = value.message;
+      const representation = new Representation(cseFinalPrint + msg);
+      resolve({ status: 'finished', context, value, representation });
+    } else {
+      const representation = new Representation(value);
+      resolve({ status: 'finished', context, value, representation });
+    }
+  });
 }
+
+let source = '';
 
 /**
  * Function to be called when a program is to be interpreted using
@@ -62,25 +69,35 @@ export function PyCSEResultPromise(context: PyContext, value: Value): Promise<Re
  * @param options Evaluation options.
  * @returns The result of running the CSE machine.
  */
-export function PyEvaluate(code: string, program: StmtNS.Stmt, context: PyContext, options: IOptions): Value {
+export function PyEvaluate(code: string, program: StmtNS.Stmt, context: PyContext, options: RecursivePartial<IOptions>): Value {
+    source = code;
+    try {
+    // TODO: is undefined variables check necessary for Python?
+    // checkProgramForUndefinedVariables(program, context)
+    } catch (error: any) {
+      return { type: 'error', message: error.message };
+    }
+
     try {
         context.runtime.isRunning = true;
         context.control = new PyControl(program);
+        context.stash = new Stash()
         
         const result = pyRunCSEMachine(
             code, 
             context, 
             context.control, 
             context.stash, 
-            options.envSteps,
-            options.stepLimit,
-            options.isPrelude || false,
+            options.envSteps!,
+            options.stepLimit!,
+            options.isPrelude,
         );
-        return context.output ? { type: "string", value: context.output} : result;
-    } catch(error: any) {
-        return { type: 'error', message: error.message};
+        const rep: Value = { type: "string", value: cseFinalPrint };
+    return rep;
+    } catch (error: any) {
+    return { type: 'error', message: error.message };
     } finally {
-        context.runtime.isRunning = false;
+    context.runtime.isRunning = false;
     }
 }
 
