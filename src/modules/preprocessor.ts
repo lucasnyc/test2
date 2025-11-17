@@ -68,7 +68,7 @@ export async function preloadModules(context: PyContext, ast: Stmt) {
       loadedModules.set(moduleName, processedModule);
     }
     
-    const globalEnv = context.runtime.environments[context.runtime.environments.length - 1];
+    const globalEnv = context.runtime.environments[0];
     console.log("[preprocessor] Global environment:", globalEnv);
     for (const importNode of importNodes) {
       const moduleName = importNode.module.lexeme;
