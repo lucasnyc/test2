@@ -3,7 +3,7 @@ import { ModuleConnectionError, ModuleInternalError } from './errors';
 import { getRequireProvider } from './requireProvider';
 
 // Using a default static URL as a fallback.
-export let MODULES_STATIC_URL = 'https://source-academy.github.io/modules';
+export let MODULES_STATIC_URL = 'http://127.0.0.1:8022';
 
 export function setModulesStaticURL(url: string) {
     MODULES_STATIC_URL = url;
