@@ -1,7 +1,6 @@
 // Simplified error implementation
 // TODO: make it more correct in the future after the import is working
 
-// Base class
 export abstract class ModuleError extends Error {
     public abstract type: string;
     constructor(message: string) {
