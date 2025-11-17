@@ -92,12 +92,11 @@ export function PyEvaluate(code: string, program: StmtNS.Stmt, context: PyContex
             options.stepLimit!,
             options.isPrelude,
         );
-        const rep: Value = { type: "string", value: cseFinalPrint };
-    return rep;
-    } catch (error: any) {
-    return { type: 'error', message: error.message };
+        return context.output ? { type: "string", value: context.output} : result;
+    } catch(error: any) {
+        return { type: 'error', message: error.message};
     } finally {
-    context.runtime.isRunning = false;
+        context.runtime.isRunning = false;
     }
 }
 
