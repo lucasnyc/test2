@@ -322,10 +322,11 @@ export interface Finished {
 export class Representation {
     constructor(public representation: string) {}
   
-    toString(): string {
+    toString(value: any): string {
         // call str(value) in stdlib
         // TODO: mapping
-        return this.representation;
+        const result = toPythonString(value);
+        return result;
     }
 }
 
