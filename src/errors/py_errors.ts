@@ -261,7 +261,7 @@ export class NameError extends PyRuntimeSourceError {
     const indicator = createErrorIndicator(snippet, errorPos);
     
     const hint = `NameError: name '${name}' is not defined`;
-    const suggestion = `The name '${name}' is not defined in the current scope. Check for typos or make sure the variable is assigned a value before being used.`;
+    const suggestion = `The name '${name}' is not defined in the current scope. Check for typos or make sure the variable is assigned a value before being used HAHA.`;
 
     this.message = `NameError at line ${line}\n\n    ${fullLine}\n    ${' '.repeat(adjustedOffset)}${indicator}\n${hint}\n${suggestion}`;
   }
