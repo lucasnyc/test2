@@ -52,7 +52,7 @@ export class PyContext {
       //evaller: null,
       loadedModules: {},
       loadedModuleTypes: {},
-      conductor: null as any,
+      conductor: {} as any,
     }
   }
 
