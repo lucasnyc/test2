@@ -6,6 +6,8 @@ import { Parser } from "../parser";
 import { Resolver } from "../resolver";
 import { StmtNS } from "../ast-types";
 import { JSModuleLoader } from "../modules/loader";
+import { linkJsImports } from "../modules/linker";
+import { pyDefineVariable } from "../cse-machine/py_utils";
 
 type Stmt = StmtNS.Stmt;
 
@@ -37,7 +39,18 @@ export async function PyRunInContext(
   options: RecursivePartial<IOptions> = {},
 ): Promise<Result> {
   const ast = await runPyAST(code, 1, true);
-  // await JSModuleLoader.preloadModules(context, ast);
+  
+  // Phase 1: Pre-load JS modules
+  const jsRegistry = await JSModuleLoader.preloadModules(ast);
+
+  // Phase 2: Link JS imports to the Python environment
+  const linkedImports = linkJsImports(ast, jsRegistry);
+
+  // Inject linked imports into the global environment
+  for (const [name, value] of linkedImports.entries()) {
+    pyDefineVariable(context, name, value);
+  }
+
   const result = PyRunCSEMachine(code, ast, context, options);
   return result;
 }
