@@ -5,9 +5,6 @@ import { Tokenizer } from "../tokenizer";
 import { Parser } from "../parser";
 import { Resolver } from "../resolver";
 import { StmtNS } from "../ast-types";
-import { JSModuleLoader } from "../modules/loader";
-import { linkJsImports } from "../modules/linker";
-import { pyDefineVariable } from "../cse-machine/py_utils";
 
 type Stmt = StmtNS.Stmt;
 
@@ -39,15 +36,6 @@ export async function PyRunInContext(
   options: RecursivePartial<IOptions> = {},
 ): Promise<Result> {
   const ast = await runPyAST(code, 1, true);
-
-  const loader = new JSModuleLoader();
-  const jsRegistry = await loader.preloadModules(code);
-  const linkedImports = linkJsImports(ast as StmtNS.FileInput, jsRegistry);
-
-  for (const [name, value] of linkedImports.entries()) {
-    pyDefineVariable(context, name, value);
-  }
-
   const result = PyRunCSEMachine(code, ast, context, options);
   return result;
 }

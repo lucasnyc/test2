@@ -9,8 +9,7 @@ import commonjs from '@rollup/plugin-commonjs';
 const config = [{
   input: 'src/conductor/PyEvaluator.ts',
   output: {
-    dir: 'dist',
-    entryFileNames: 'python-evaluator.cjs',
+    file: 'dist/python-evaluator.cjs',
     format: 'cjs',
     name: 'PySlangEvaluator',
     sourcemap: true
@@ -23,10 +22,10 @@ const config = [{
     format: 'umd',
     name: 'PySlangWorker',
     exports: 'named', // Specify named exports
-    sourcemap: true,
-    inlineDynamicImports: true
+    sourcemap: true
   },
   plugins: [commonjs(), json(), typescript(), nodeResolve()]
 }];
 
 export default config;
+
