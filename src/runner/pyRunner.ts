@@ -49,12 +49,13 @@ export async function PyRunInContext(
   // Conditionally run the module loader only if import statements are present.
   if (scanForImports(code)) {
     // If imports exist, dynamically load the heavy modules and run the full pipeline.
-    const { JSModuleLoader } = await import('../modules/loader');
-    const { linkJsImports } = await import('../modules/linker');
+    // We import the whole module and access properties from it to avoid destructuring issues.
+    const loaderModule = await import('../modules/loader');
+    const linkerModule = await import('../modules/linker');
 
-    const loader = new JSModuleLoader();
+    const loader = new loaderModule.JSModuleLoader();
     const jsRegistry = await loader.preloadModules(code);
-    const linkedImports = linkJsImports(ast as StmtNS.FileInput, jsRegistry);
+    const linkedImports = linkerModule.linkJsImports(ast as StmtNS.FileInput, jsRegistry);
 
     for (const [name, value] of linkedImports.entries()) {
       pyDefineVariable(context, name, value);
