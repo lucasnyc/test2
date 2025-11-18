@@ -23,7 +23,8 @@ const config = [{
     format: 'umd',
     name: 'PySlangWorker',
     exports: 'named', // Specify named exports
-    sourcemap: true
+    sourcemap: true,
+    inlineDynamicImports: true
   },
   plugins: [commonjs(), json(), typescript(), nodeResolve()]
 }];
