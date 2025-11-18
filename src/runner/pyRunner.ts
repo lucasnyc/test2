@@ -41,10 +41,11 @@ export async function PyRunInContext(
   const ast = await runPyAST(code, 1, true);
   
   // Phase 1: Pre-load JS modules
-  const jsRegistry = await JSModuleLoader.preloadModules(ast);
+  const loader = new JSModuleLoader();
+  const jsRegistry = await loader.preloadModules(code);
 
   // Phase 2: Link JS imports to the Python environment
-  const linkedImports = linkJsImports(ast, jsRegistry);
+  const linkedImports = linkJsImports(ast as StmtNS.FileInput, jsRegistry);
 
   // Inject linked imports into the global environment
   for (const [name, value] of linkedImports.entries()) {
