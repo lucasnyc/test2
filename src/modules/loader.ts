@@ -3,6 +3,15 @@ import createContext from 'js-slang/dist/createContext';
 import { Chapter, Context, Variant } from 'js-slang/dist/types';
 import { JSRegistry } from './types';
 
+/**
+ * A lightweight function to quickly check if a Python script contains any
+ * 'from ... import ...' statements.
+ * @param pythonCode The Python source code.
+ * @returns True if import statements are found, otherwise false.
+ */
+export function scanForImports(pythonCode: string): boolean {
+  return /from\s+([a-zA-Z_][a-zA-Z0-9_]*)/g.test(pythonCode);
+}
 
 /**
    * Scans Python code to find all `from 'module_name' import ...` statements.

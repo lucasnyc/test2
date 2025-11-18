@@ -5,8 +5,7 @@ import { Tokenizer } from "../tokenizer";
 import { Parser } from "../parser";
 import { Resolver } from "../resolver";
 import { StmtNS } from "../ast-types";
-import { JSModuleLoader } from "../modules/loader";
-import { linkJsImports } from "../modules/linker";
+import { scanForImports } from "../modules/loader";
 import { pyDefineVariable } from "../cse-machine/py_utils";
 
 type Stmt = StmtNS.Stmt;
@@ -39,17 +38,20 @@ export async function PyRunInContext(
   options: RecursivePartial<IOptions> = {},
 ): Promise<Result> {
   const ast = await runPyAST(code, 1, true);
-  
-  // Phase 1: Pre-load JS modules
-  const loader = new JSModuleLoader();
-  const jsRegistry = await loader.preloadModules(code);
 
-  // Phase 2: Link JS imports to the Python environment
-  const linkedImports = linkJsImports(ast as StmtNS.FileInput, jsRegistry);
+  // Conditionally run the module loader only if import statements are present.
+  if (scanForImports(code)) {
+    // If imports exist, dynamically load the heavy modules and run the full pipeline.
+    const { JSModuleLoader } = await import('../modules/loader');
+    const { linkJsImports } = await import('../modules/linker');
 
-  // Inject linked imports into the global environment
-  for (const [name, value] of linkedImports.entries()) {
-    pyDefineVariable(context, name, value);
+    const loader = new JSModuleLoader();
+    const jsRegistry = await loader.preloadModules(code);
+    const linkedImports = linkJsImports(ast as StmtNS.FileInput, jsRegistry);
+
+    for (const [name, value] of linkedImports.entries()) {
+      pyDefineVariable(context, name, value);
+    }
   }
 
   const result = PyRunCSEMachine(code, ast, context, options);
