@@ -18,8 +18,6 @@ export interface IOptions {
 /**
  * A lightweight function to quickly check if a Python script contains any
  * 'from ... import ...' statements.
- * @param pythonCode The Python source code.
- * @returns True if import statements are found, otherwise false.
  */
 function scanForImports(pythonCode: string): boolean {
   return /from\s+([a-zA-Z_][a-zA-Z0-9_]*)/g.test(pythonCode);

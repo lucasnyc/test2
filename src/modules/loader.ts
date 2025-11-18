@@ -33,13 +33,10 @@ export class JSModuleLoader {
     const registry: JSRegistry = new Map();
 
     // Create a temporary, lightweight js-slang context for the loading operation.
-    // `createContext` is confirmed as the correct function for this.
     const context: Context = createContext(Chapter.SOURCE_4, Variant.DEFAULT);
 
     try {
       // 1. Tell js-slang to fetch and load the modules into the context.
-      // This function will automatically use the URL that the frontend
-      // has already configured via `setModulesStaticURL`.
       await loadSourceModules(moduleNames, context, false); // `false` for not loading tabs
     } catch (error) {
         console.error("An error occurred during the loading of source modules.", error);

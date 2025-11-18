@@ -9,7 +9,8 @@ import commonjs from '@rollup/plugin-commonjs';
 const config = [{
   input: 'src/conductor/PyEvaluator.ts',
   output: {
-    file: 'dist/python-evaluator.cjs',
+    dir: 'dist/py-slang',
+    entryFileNames: 'python-evaluator.cjs',
     format: 'cjs',
     name: 'PySlangEvaluator',
     sourcemap: true
