@@ -1,6 +1,4 @@
 import loadSourceModules from 'js-slang/dist/modules/loader';
-import createContext from 'js-slang/dist/createContext';
-import { Chapter, Context, Variant } from 'js-slang/dist/types';
 import { JSRegistry } from './types';
 
 /**
@@ -32,22 +30,26 @@ export class JSModuleLoader {
 
     const registry: JSRegistry = new Map();
 
-    // Create a temporary, lightweight js-slang context for the loading operation.
-    const context: Context = createContext(Chapter.SOURCE_4, Variant.DEFAULT);
+    // Create a minimal 'fake' context object that satisfies the needs of loadSourceModules.
+    // This avoids importing the real createContext and its heavy, non-browser-safe dependencies.
+    const fakeContext: any = {
+      runtime: {
+        environments: [{ head: {} }]
+      }
+    };
 
     try {
-      // 1. Tell js-slang to fetch and load the modules into the context.
-      await loadSourceModules(moduleNames, context, false); // `false` for not loading tabs
+      // 1. Tell js-slang to fetch and load the modules into our fake context.
+      await loadSourceModules(moduleNames, fakeContext, false);
     } catch (error) {
         console.error("An error occurred during the loading of source modules.", error);
         return registry; // Return empty or partial registry on failure.
     }
 
-    // 2. Extract the loaded modules from the context's environment.
+    // 2. Extract the loaded modules from the fake context's environment.
     for (const moduleName of moduleNames) {
       try {
-        // Correctly access the module from the head of the global environment.
-        const moduleExports = context.runtime.environments[0].head[moduleName];
+        const moduleExports = fakeContext.runtime.environments[0].head[moduleName];
         if (moduleExports === undefined) {
           throw new Error(`Module '${moduleName}' was not found in the context after loading.`);
         }
