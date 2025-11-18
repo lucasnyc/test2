@@ -1,7 +1,6 @@
 import { toPythonString } from './stdlib'
 import { Value } from './cse-machine/stash'
 import { Context } from './cse-machine/context'
-import { ModuleFunctions } from './modules/moduleTypes'
 import { PyContext } from './cse-machine/py_context'
 import { PyControl } from './cse-machine/py_control'
 import { IRunnerPlugin } from '@sourceacademy/conductor/runner'
@@ -341,7 +340,7 @@ export interface NativeStorage {
     surrounding scope, so we cannot set evaller to `eval` directly. subsequent assignments to evaller will
     close in the surrounding values, so no problem
      */
-    loadedModules: Record<string, ModuleFunctions>
+    loadedModules: Record<string, any>
     loadedModuleTypes: Record<string, Record<string, string>>
     conductor: IRunnerPlugin;
 }

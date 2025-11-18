@@ -6,19 +6,20 @@
 
 /* tslint:disable:max-classes-per-file */
 
-import { StmtNS, ExprNS } from '../ast-types';
 import { PyClosure, JsClosure } from './py_closure';
 import { PyContext } from './py_context';
 import { PyControl, PyControlItem } from './py_control';
-import { createEnvironment, currentEnvironment, pushEnvironment, popEnvironment } from './py_environment';
-import { PyNode, Instr, InstrType, UnOpInstr, BinOpInstr, BoolOpInstr, AssmtInstr, AppInstr, BranchInstr } from './py_types';
-import { Stash, Value, ErrorValue } from './stash';
-import { IOptions } from '../runner/pyRunner';
-import * as instrCreator from './py_instrCreator';
-import { evaluateUnaryExpression, evaluateBinaryExpression, evaluateBoolExpression, isFalsy } from './py_operators';
-import { Result, Finished, CSEBreak, Representation, RecursivePartial} from '../types';
-import { toPythonString } from '../py_stdlib'
+import { createEnvironment, currentEnvironment, popEnvironment, pushEnvironment } from './py_environment'
+import * as instrCreator from './py_instrCreator';;
+import { evaluateBinaryExpression, evaluateBoolExpression, evaluateUnaryExpression, isFalsy } from './py_operators';
+import { AppInstr, AssmtInstr, BinOpInstr, BoolOpInstr, BranchInstr, Instr, InstrType, PyNode, UnOpInstr } from './py_types';
 import { pyGetVariable, pyDefineVariable, scanForAssignments } from './py_utils';
+import { Value, Stash} from './stash';
+import { ExprNS, StmtNS } from '../ast-types';
+import { CSEBreak, RecursivePartial, Representation, Result } from '../types';
+import { pyValueToJs, jsValueToPy } from '../modules/marshaller';
+import { isJSFunctionWrapper } from '../modules/types';
+import { IOptions } from '../runner/pyRunner';
 
 
 type CmdEvaluator = (
@@ -243,7 +244,6 @@ const pyCmdEvaluators: { [type: string]: CmdEvaluator } = {
     /**
      * AST Node Handlers
      */
-
     'FileInput': (code, command, context, control, stash, isPrelude) => {
         const fileInput = command as StmtNS.FileInput;
         const statements = fileInput.statements.slice().reverse();
@@ -264,7 +264,7 @@ const pyCmdEvaluators: { [type: string]: CmdEvaluator } = {
         } else if (typeof literal.value === 'string') {
             stash.push({ type: 'string', value: literal.value });
         } else {
-            stash.push({ type: 'undefined' }); // For null
+            stash.push({ type: 'undefined' }); 
         }
     },
 
@@ -449,10 +449,8 @@ const pyCmdEvaluators: { [type: string]: CmdEvaluator } = {
     },
 
     'FromImport': (code, command, context, control, stash, isPrelude) => {
-           // TODO: nothing to do for now, we can implement it for CSE instructions later on
-           // All modules are preloaded into the global environment by the runner.
-           // When the code later uses the module name (e.g., 'runes'), pyGetVariable
-           // will find it in the global scope.
+           // TODO: nothing to do for now, we can implement it for CSE visualization later on
+           // All modules are preloaded into the global environment by the linker
        },
 
     /**
@@ -529,11 +527,9 @@ const pyCmdEvaluators: { [type: string]: CmdEvaluator } = {
             args.unshift(stash.pop());
         }
 
-        // pop callable from stash
         const callable = stash.pop();
 
         if (callable instanceof PyClosure) {
-            // User-defined function
             const closure = callable as PyClosure;
             // push reset and implicit return for cleanup at end of function
             control.push(instrCreator.resetInstr(instr.srcNode));
@@ -550,7 +546,7 @@ const pyCmdEvaluators: { [type: string]: CmdEvaluator } = {
             // push function body onto control stack
             const closureNode = closure.node;
             if (closureNode.constructor.name === 'FunctionDef') {
-               // 'def' has a body of statements (an array)
+               // 'def' has a body of statements
                 const bodyStmts = (closureNode as StmtNS.FunctionDef).body.slice().reverse();
                 control.push(...bodyStmts);
             } else {
@@ -558,6 +554,11 @@ const pyCmdEvaluators: { [type: string]: CmdEvaluator } = {
                const bodyExpr = (closureNode as ExprNS.Lambda).body;
                control.push(bodyExpr);
             }
+        } else if (isJSFunctionWrapper(callable)) {
+            const jsArgs = args.map(pyValueToJs);
+            const rawResult = callable.raw(...jsArgs);
+            const pyResult = jsValueToPy(rawResult);
+            stash.push(pyResult);
         } else if (callable instanceof JsClosure) {
             const result = callable.call(args);
             stash.push(result);

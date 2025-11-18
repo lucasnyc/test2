@@ -5,7 +5,7 @@ import { Tokenizer } from "../tokenizer";
 import { Parser } from "../parser";
 import { Resolver } from "../resolver";
 import { StmtNS } from "../ast-types";
-import { preloadModules } from "../modules/preprocessor";
+import { JSModuleLoader } from "../modules/loader";
 
 type Stmt = StmtNS.Stmt;
 
@@ -37,7 +37,7 @@ export async function PyRunInContext(
   options: RecursivePartial<IOptions> = {},
 ): Promise<Result> {
   const ast = await runPyAST(code, 1, true);
-  await preloadModules(context, ast);
+  // await JSModuleLoader.preloadModules(context, ast);
   const result = PyRunCSEMachine(code, ast, context, options);
   return result;
 }

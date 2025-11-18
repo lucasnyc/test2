@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "@sourceacademy/conductor": "^0.2.3",
+    "js-slang": "1.0.85",
     "@types/estree": "^1.0.0",
     "fast-levenshtein": "^3.0.0",
     "mathjs": "^14.4.0"
