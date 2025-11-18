@@ -5,7 +5,8 @@ import { Tokenizer } from "../tokenizer";
 import { Parser } from "../parser";
 import { Resolver } from "../resolver";
 import { StmtNS } from "../ast-types";
-import { scanForImports } from "../modules/loader";
+import { JSModuleLoader, scanForImports } from "../modules/loader";
+import { linkJsImports } from "../modules/linker";
 import { pyDefineVariable } from "../cse-machine/py_utils";
 
 type Stmt = StmtNS.Stmt;
@@ -38,17 +39,11 @@ export async function PyRunInContext(
   options: RecursivePartial<IOptions> = {},
 ): Promise<Result> {
   const ast = await runPyAST(code, 1, true);
-
-  // Conditionally run the module loader only if import statements are present.
+  
   if (scanForImports(code)) {
-    // If imports exist, dynamically load the heavy modules and run the full pipeline.
-    const { JSModuleLoader } = await import('../modules/loader');
-    const { linkJsImports } = await import('../modules/linker');
-
     const loader = new JSModuleLoader();
     const jsRegistry = await loader.preloadModules(code);
     const linkedImports = linkJsImports(ast as StmtNS.FileInput, jsRegistry);
-
     for (const [name, value] of linkedImports.entries()) {
       pyDefineVariable(context, name, value);
     }
